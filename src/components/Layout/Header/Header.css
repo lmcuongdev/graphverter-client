@@ -1,0 +1,4 @@
+.selected {
+    text-decoration: underline !important;
+    font-weight: bold;
+}
