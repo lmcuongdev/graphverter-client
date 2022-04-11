@@ -4,7 +4,11 @@ import { useSelector, useDispatch } from "react-redux";
 import Editor from "@monaco-editor/react";
 import _ from "lodash";
 
-import { jsonToSchema, mergeSchemas } from "utils";
+import {
+  jsonToSchema,
+  mergeSchemas,
+  getSuggestedSchema,
+} from "utils/converter";
 import { sessionActions } from "app/slices/sessionSlice";
 
 const hasPayload = (method) => ["POST", "PUT"].includes(method);
@@ -46,21 +50,33 @@ const ProjectDetail = () => {
 
   const handleFormSubmission = (event, index) => {
     event.preventDefault();
-    // TODO: Validate first
+    // Validate first
     if (!_.isEmpty(errors[index])) {
-      console.log("cannot convert");
+      console.log("Cannot convert to schema", { index });
       return;
     }
-    const payloadSchema = hasPayload(endpoints[index].method)
-      ? jsonToSchema(endpoints[index].payloadJSON, "Request")
+    const isMutation = hasPayload(endpoints[index].method);
+    const payloadSchema = isMutation
+      ? jsonToSchema(endpoints[index].payloadJSON, "request")
       : { value: "" };
     const responseSchema = jsonToSchema(
       endpoints[index].responseJSON,
-      "Response"
+      "response"
     );
-    const suggestedSchema = mergeSchemas(
+
+    if (payloadSchema.error || responseSchema.error) {
+      console.log("Cannot convert to schema", { index });
+      return;
+    }
+
+    const mergedSchema = mergeSchemas(
       payloadSchema.value,
       responseSchema.value
+    );
+    const suggestedSchema = getSuggestedSchema(
+      mergedSchema,
+      isMutation,
+      endpoints[index]
     );
     dispatch(suggestSchema({ index, schema: suggestedSchema }));
   };

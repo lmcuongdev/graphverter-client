@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@graphql-tools/merge": "^8.2.7",
+    "@lmcuongdev/json-to-schema": "github:lmcuongdev/json-to-simple-graphql-schema",
     "@monaco-editor/react": "^4.4.1",
     "@reduxjs/toolkit": "^1.6.2",
     "@testing-library/jest-dom": "^5.14.1",
