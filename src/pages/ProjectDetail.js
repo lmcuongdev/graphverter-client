@@ -9,6 +9,9 @@ import Header from "components/Layout/Header";
 import SessionConfig from "components/ProjectDetail/SessionConfig";
 import { getProjectById } from "app/slices/projectSlice";
 import { getLatestVersion } from "app/slices/versionSlice";
+import { updateSession } from "app/slices/sessionSlice";
+import { mergeSchemas } from "utils/converter";
+import { toast } from "react-toastify";
 
 const ProjectDetail = () => {
   const { id } = useParams();
@@ -17,24 +20,50 @@ const ProjectDetail = () => {
   const error = useSelector((state) => state.project.error);
 
   const session = useSelector((state) => state.sessions.session);
+  const shouldReloadSession = useSelector(
+    (state) => state.sessions.shouldReloadSession
+  );
 
   useEffect(() => {
     dispatch(getProjectById(id));
   }, [dispatch, id]);
 
   useEffect(() => {
-    if (project && project.session) {
+    if (project && project.session && shouldReloadSession) {
       dispatch(
         getSession({ projectId: project.id, sessionId: project.session.id })
       );
     }
-  }, [dispatch, project]);
+  }, [dispatch, project, shouldReloadSession]);
 
   useEffect(() => {
     if (project && session) {
       dispatch(getLatestVersion({ projectId: project.id }));
     }
   }, [dispatch, project, session]);
+
+  const endpoints = useSelector((state) => state.sessions.endpoints);
+  const schemaTexts = endpoints.map((endpoint) => endpoint.suggestedSchemaText);
+  const saveSession = () => {
+    // Merge schemas
+    try {
+      const schemaText = mergeSchemas(...schemaTexts);
+
+      console.log(schemaText);
+
+      // If no error, dispatch updateSession
+      dispatch(
+        updateSession({
+          projectId: project.id,
+          sessionId: session.id,
+          data: { endpoints, schemaText },
+        })
+      );
+    } catch (err) {
+      console.log(err);
+      toast.error(err.message);
+    }
+  };
 
   return (
     <>
@@ -50,7 +79,12 @@ const ProjectDetail = () => {
         )}
         <div className="d-flex">
           <h4>Schema config</h4>
-          <Button className="ms-auto px-5" variant="primary" size="sm">
+          <Button
+            className="ms-auto px-5"
+            variant="primary"
+            size="sm"
+            onClick={saveSession}
+          >
             Save
           </Button>
         </div>

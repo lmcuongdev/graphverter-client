@@ -51,11 +51,11 @@ export const getSuggestedSchema = (schemaText, isMutation, { url, method }) => {
   // If there's no PayloadInput suggested previously, returns empty string
   const suggestedInput =
     isMutation && schemaText.includes("PayloadInput")
-      ? "_payload: PayloadInput"
+      ? "(_payload: PayloadInput)"
       : "";
 
   let schema = `type ${definitionType} {
-  queryName(${suggestedInput}): ResponseData
+  queryName${suggestedInput}: ResponseData
   @rest(
     url: "${url}"
     method: "${method}"

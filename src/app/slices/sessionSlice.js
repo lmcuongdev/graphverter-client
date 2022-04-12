@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import { toCamelCase } from "utils/common";
+import { toCamelCase, toSnakeCase } from "utils/common";
 import apiClient from "../../api-client";
 
 export const getSession = createAsyncThunk(
@@ -10,6 +10,22 @@ export const getSession = createAsyncThunk(
     try {
       const response = await apiClient.get(
         `/projects/${projectId}/sessions/${sessionId}`
+      );
+      console.log(toCamelCase(response));
+      return toCamelCase(response);
+    } catch (err) {
+      throw Error(err.error_message);
+    }
+  }
+);
+
+export const updateSession = createAsyncThunk(
+  "sessions/saveSession",
+  async ({ projectId, sessionId, data }) => {
+    try {
+      const response = await apiClient.put(
+        `/projects/${projectId}/sessions/${sessionId}`,
+        toSnakeCase(data)
       );
       return toCamelCase(response);
     } catch (err) {
@@ -34,6 +50,7 @@ const sessionSlice = createSlice({
       },
     ],
     error: null,
+    shouldReloadSession: true,
   },
   reducers: {
     suggestSchema: (state, action) => {
@@ -64,8 +81,20 @@ const sessionSlice = createSlice({
       state.session = action.payload;
       state.schemaText = action.payload.metaData.schemaText;
       state.endpoints = action.payload.metaData.endpoints;
+      state.shouldReloadSession = false;
     },
     [getSession.rejected]: (state, action) => {
+      const error = action.error.message || "Unexpected Error!";
+      state.error = error;
+      toast.error(error);
+      state.shouldReloadSession = false;
+    },
+    [updateSession.pending]: (state, action) => {},
+    [updateSession.fulfilled]: (state, action) => {
+      state.shouldReloadSession = true;
+      toast.success("Session saved!");
+    },
+    [updateSession.rejected]: (state, action) => {
       const error = action.error.message || "Unexpected Error!";
       state.error = error;
       toast.error(error);
