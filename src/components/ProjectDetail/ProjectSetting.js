@@ -1,17 +1,20 @@
 import React, { useState } from "react";
-import { Form, Accordion } from "react-bootstrap";
+import { Form, Accordion, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
 import { projectActions } from "app/slices/projectSlice";
+import deploySvg from "assets/deploy.svg";
 
 const ProjectSetting = () => {
   const dispatch = useDispatch();
   const project = useSelector((state) => state.project.project);
-  const [isDirty, setIsDirty] = useState(false);
+
+  const version = useSelector((state) => state.versions.version);
+  const versionLoading = useSelector((state) => state.versions.loading);
 
   return (
     <>
-      <Accordion>
+      <Accordion className="mb-2">
         <Accordion.Item eventKey="0">
           <Accordion.Header>Deploy settings</Accordion.Header>
           <Accordion.Body>
@@ -48,12 +51,11 @@ const ProjectSetting = () => {
                     checked={project.is_deployed}
                     onChange={() => {
                       // TODO: Call API here
-                      setIsDirty(true);
                       dispatch(projectActions.setDeploy(!project.is_deployed));
                     }}
                   />
                   <label className="form-check-label">
-                    Deploy this endpoint
+                    Publish this endpoint
                   </label>
                 </div>
               </Form.Group>
@@ -61,6 +63,27 @@ const ProjectSetting = () => {
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
+      <div className="d-flex">
+        <Button
+          variant="primary"
+          disabled={versionLoading || !version.is_dirty}
+        >
+          Deploy{" "}
+          <img
+            src={deploySvg}
+            className="d-inline-block align-top"
+            alt="logo"
+            style={{ cursor: "pointer" }}
+          />
+        </Button>
+        <p className="form-text text-muted mx-2">
+          {versionLoading
+            ? "Loading..."
+            : version.is_dirty
+            ? "You have changes ready to be launched"
+            : "No changes to be launched"}
+        </p>
+      </div>
     </>
   );
 };

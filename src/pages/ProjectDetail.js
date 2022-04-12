@@ -1,12 +1,14 @@
 import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Button } from "react-bootstrap";
+
+import { getSession } from "app/slices/sessionSlice";
+import ProjectSetting from "components/ProjectDetail/ProjectSetting";
 import Header from "components/Layout/Header";
 import SessionConfig from "components/ProjectDetail/SessionConfig";
 import { getProjectById } from "app/slices/projectSlice";
-import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { getSession } from "app/slices/sessionSlice";
-import ProjectSetting from "components/ProjectDetail/ProjectSetting";
-import { Button } from "react-bootstrap";
+import { getLatestVersion } from "app/slices/versionSlice";
 
 const ProjectDetail = () => {
   const { id } = useParams();
@@ -27,6 +29,12 @@ const ProjectDetail = () => {
       );
     }
   }, [dispatch, project]);
+
+  useEffect(() => {
+    if (project && session) {
+      dispatch(getLatestVersion({ projectId: project.id }));
+    }
+  }, [dispatch, project, session]);
 
   return (
     <>
