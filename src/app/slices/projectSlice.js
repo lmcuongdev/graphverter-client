@@ -34,7 +34,11 @@ const projectSlice = createSlice({
     project: null,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    setDeploy: (state, action) => {
+      state.project.is_deployed = action.payload;
+    },
+  },
   extraReducers: {
     [getProjects.pending]: (state, action) => {
       state.loadingProjects = true;

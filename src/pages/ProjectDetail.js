@@ -5,6 +5,8 @@ import { getProjectById } from "app/slices/projectSlice";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getSession } from "app/slices/sessionSlice";
+import ProjectSetting from "components/ProjectDetail/ProjectSetting";
+import { Button } from "react-bootstrap";
 
 const ProjectDetail = () => {
   const { id } = useParams();
@@ -31,11 +33,21 @@ const ProjectDetail = () => {
       <Header />
       <div className="container">
         <h1 className="text-center">Project {id}</h1>
-        {project && <h2>{project.api_path}</h2>}
-        {error && <div className="text-danger">{error}</div>}
 
+        <h4>Settings</h4>
+        {project && (
+          <div className="container mb-2 py-3 bg-light rounded">
+            <ProjectSetting />
+          </div>
+        )}
+        <div className="d-flex">
+          <h4>Schema config</h4>
+          <Button className="ms-auto px-5" variant="primary" size="sm">
+            Save
+          </Button>
+        </div>
         {session && (
-          <div className="container">
+          <div className="container mb-2 py-3 bg-light rounded">
             <SessionConfig />
           </div>
         )}

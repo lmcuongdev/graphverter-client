@@ -10,6 +10,7 @@ import {
   getSuggestedSchema,
 } from "utils/converter";
 import { sessionActions } from "app/slices/sessionSlice";
+import { confirm } from "components/ConfirmationModal";
 
 const hasPayload = (method) => ["POST", "PUT"].includes(method);
 
@@ -43,7 +44,12 @@ const ProjectDetail = () => {
 
   const errors = useMemo(() => getEndpointValidations(endpoints), [endpoints]);
 
-  const { handleEndpointDataChange, suggestSchema } = sessionActions;
+  const {
+    handleEndpointDataChange,
+    suggestSchema,
+    addEndpoint,
+    removeEndpoint,
+  } = sessionActions;
   const handleEndpointDataChangeDispatch = (index, type, value) => {
     dispatch(handleEndpointDataChange({ index, type, value }));
   };
@@ -82,128 +88,152 @@ const ProjectDetail = () => {
   };
 
   return (
-    <Accordion>
-      {endpoints.map((endpoint, index) => (
-        <Accordion.Item eventKey={index} key={index}>
-          <Accordion.Header>
-            {endpoint.method} {endpoint.url}
-          </Accordion.Header>
-          <Accordion.Body>
-            <div className="row">
-              <div className="col-6" id="left-pane">
-                <Form onSubmit={(event) => handleFormSubmission(event, index)}>
-                  <Row className="mb-3">
-                    <Form.Group as={Col} md={3}>
-                      <Form.Label>Method</Form.Label>
-                      <Form.Select
-                        value={endpoint.method}
-                        onChange={(e) =>
-                          handleEndpointDataChangeDispatch(
-                            index,
-                            "method",
-                            e.target.value
-                          )
-                        }
-                      >
-                        {["GET", "POST", "PUT", "DELETE"].map((method) => (
-                          <option key={method}>{method}</option>
-                        ))}
-                      </Form.Select>
-                    </Form.Group>
+    <>
+      <Accordion defaultActiveKey={0}>
+        {endpoints.map((endpoint, index) => (
+          <Accordion.Item eventKey={index} key={index} className="my-2">
+            <Accordion.Header>
+              {endpoint.method} {endpoint.url}
+            </Accordion.Header>
+            <Accordion.Body>
+              <div className="row">
+                <div className="col-6" id="left-pane">
+                  <Form
+                    onSubmit={(event) => handleFormSubmission(event, index)}
+                  >
+                    <Row className="mb-3">
+                      <Form.Group as={Col} md={3}>
+                        <Form.Label>Method</Form.Label>
+                        <Form.Select
+                          value={endpoint.method}
+                          onChange={(e) =>
+                            handleEndpointDataChangeDispatch(
+                              index,
+                              "method",
+                              e.target.value
+                            )
+                          }
+                        >
+                          {["GET", "POST", "PUT", "DELETE"].map((method) => (
+                            <option key={method}>{method}</option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
 
-                    <Form.Group as={Col} md={9}>
-                      <Form.Label>URL</Form.Label>
-                      <Form.Control
-                        placeholder="https://api.com/"
-                        value={endpoint.url}
-                        onChange={(e) =>
-                          handleEndpointDataChangeDispatch(
-                            index,
-                            "url",
-                            e.target.value
-                          )
-                        }
-                      />
-                      {errors[index]?.url && (
-                        <div className="text-danger">URL is required</div>
-                      )}
-                    </Form.Group>
-                  </Row>
+                      <Form.Group as={Col} md={9}>
+                        <Form.Label>URL</Form.Label>
+                        <Form.Control
+                          placeholder="https://api.com/"
+                          value={endpoint.url}
+                          onChange={(e) =>
+                            handleEndpointDataChangeDispatch(
+                              index,
+                              "url",
+                              e.target.value
+                            )
+                          }
+                        />
+                        {errors[index]?.url && (
+                          <div className="text-danger">URL is required</div>
+                        )}
+                      </Form.Group>
+                    </Row>
 
-                  {hasPayload(endpoint.method) && (
+                    {hasPayload(endpoint.method) && (
+                      <Form.Group className="mb-3">
+                        <Form.Label>Request payload</Form.Label>
+                        <Editor
+                          language="json"
+                          value={endpoint.payloadJSON}
+                          theme="vs-dark"
+                          height="200px"
+                          onChange={(value) => {
+                            handleEndpointDataChangeDispatch(
+                              index,
+                              "payloadJSON",
+                              value
+                            );
+                          }}
+                        />
+                        {errors[index]?.payloadJSON && (
+                          <div className="text-danger">Invalid JSON</div>
+                        )}
+                      </Form.Group>
+                    )}
+
                     <Form.Group className="mb-3">
-                      <Form.Label>Request payload</Form.Label>
+                      <Form.Label>Response data</Form.Label>
                       <Editor
                         language="json"
-                        value={endpoint.payloadJSON}
+                        value={endpoint.responseJSON}
                         theme="vs-dark"
                         height="200px"
                         onChange={(value) => {
                           handleEndpointDataChangeDispatch(
                             index,
-                            "payloadJSON",
+                            "responseJSON",
                             value
                           );
                         }}
                       />
-                      {errors[index]?.payloadJSON && (
+                      {errors[index]?.responseJSON && (
                         <div className="text-danger">Invalid JSON</div>
                       )}
                     </Form.Group>
-                  )}
 
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      disabled={!_.isEmpty(errors[index])}
+                      size="sm"
+                    >
+                      Convert
+                    </Button>
+                  </Form>
+                </div>
+                <div className="col-6" id="right-pane">
                   <Form.Group className="mb-3">
-                    <Form.Label>Response data</Form.Label>
+                    <Form.Label>Converted schemas</Form.Label>
                     <Editor
-                      language="json"
-                      value={endpoint.responseJSON}
+                      language="graphql"
+                      value={endpoint.suggestedSchemaText}
                       theme="vs-dark"
-                      height="200px"
+                      height="400px"
                       onChange={(value) => {
                         handleEndpointDataChangeDispatch(
                           index,
-                          "responseJSON",
+                          "suggestedSchemaText",
                           value
                         );
                       }}
                     />
-                    {errors[index]?.responseJSON && (
-                      <div className="text-danger">Invalid JSON</div>
-                    )}
                   </Form.Group>
-
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    disabled={!_.isEmpty(errors[index])}
-                  >
-                    Convert
-                  </Button>
-                </Form>
+                </div>
               </div>
-              <div className="col-6" id="right-pane">
-                <Form.Group className="mb-3">
-                  <Form.Label>Converted schemas</Form.Label>
-                  <Editor
-                    language="graphql"
-                    value={endpoint.suggestedSchemaText}
-                    theme="vs-dark"
-                    height="400px"
-                    onChange={(value) => {
-                      handleEndpointDataChangeDispatch(
-                        index,
-                        "suggestedSchemaText",
-                        value
-                      );
-                    }}
-                  />
-                </Form.Group>
+              <div className="d-flex">
+                <Button
+                  variant="danger"
+                  onClick={async () =>
+                    (await confirm("Are you sure to delete this endpoint?")) &&
+                    dispatch(removeEndpoint(index))
+                  }
+                  className="ms-auto"
+                  size="sm"
+                >
+                  Delete this schema
+                </Button>
               </div>
-            </div>
-          </Accordion.Body>
-        </Accordion.Item>
-      ))}
-    </Accordion>
+            </Accordion.Body>
+          </Accordion.Item>
+        ))}
+        <Button
+          variant="outline-primary"
+          onClick={() => dispatch(addEndpoint())}
+        >
+          + Add
+        </Button>
+      </Accordion>
+    </>
   );
 };
 

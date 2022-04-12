@@ -43,6 +43,18 @@ const sessionSlice = createSlice({
       const { index, type, value } = action.payload;
       state.endpoints[index][type] = value.trim();
     },
+    addEndpoint: (state, action) => {
+      state.endpoints.push({
+        url: "",
+        method: "GET",
+        payloadJSON: "",
+        responseJSON: "",
+        suggestedSchemaText: "",
+      });
+    },
+    removeEndpoint: (state, action) => {
+      state.endpoints.splice(action.payload, 1);
+    },
   },
   extraReducers: {
     [getSession.pending]: (state, action) => {},
