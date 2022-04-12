@@ -20,18 +20,18 @@ const getEndpointValidations = (endpoints) => {
     if (endpoint.url === "") {
       errors.url = "URL is required";
     }
-    if (hasPayload(endpoint.method) && endpoint.payloadJSON) {
+    if (hasPayload(endpoint.method) && endpoint.payloadJson) {
       try {
-        JSON.parse(endpoint.payloadJSON);
+        JSON.parse(endpoint.payloadJson);
       } catch (e) {
-        errors.payloadJSON = e.message;
+        errors.payloadJson = e.message;
       }
     }
-    if (endpoint.responseJSON) {
+    if (endpoint.responseJson) {
       try {
-        JSON.parse(endpoint.responseJSON);
+        JSON.parse(endpoint.responseJson);
       } catch (e) {
-        errors.responseJSON = e.message;
+        errors.responseJson = e.message;
       }
     }
     return errors;
@@ -63,10 +63,10 @@ const ProjectDetail = () => {
     }
     const isMutation = hasPayload(endpoints[index].method);
     const payloadSchema = isMutation
-      ? jsonToSchema(endpoints[index].payloadJSON, "request")
+      ? jsonToSchema(endpoints[index].payloadJson, "request")
       : { value: "" };
     const responseSchema = jsonToSchema(
-      endpoints[index].responseJSON,
+      endpoints[index].responseJson,
       "response"
     );
 
@@ -144,18 +144,18 @@ const ProjectDetail = () => {
                         <Form.Label>Request payload</Form.Label>
                         <Editor
                           language="json"
-                          value={endpoint.payloadJSON}
+                          value={endpoint.payloadJson}
                           theme="vs-dark"
                           height="200px"
                           onChange={(value) => {
                             handleEndpointDataChangeDispatch(
                               index,
-                              "payloadJSON",
+                              "payloadJson",
                               value
                             );
                           }}
                         />
-                        {errors[index]?.payloadJSON && (
+                        {errors[index]?.payloadJson && (
                           <div className="text-danger">Invalid JSON</div>
                         )}
                       </Form.Group>
@@ -165,18 +165,18 @@ const ProjectDetail = () => {
                       <Form.Label>Response data</Form.Label>
                       <Editor
                         language="json"
-                        value={endpoint.responseJSON}
+                        value={endpoint.responseJson}
                         theme="vs-dark"
                         height="200px"
                         onChange={(value) => {
                           handleEndpointDataChangeDispatch(
                             index,
-                            "responseJSON",
+                            "responseJson",
                             value
                           );
                         }}
                       />
-                      {errors[index]?.responseJSON && (
+                      {errors[index]?.responseJson && (
                         <div className="text-danger">Invalid JSON</div>
                       )}
                     </Form.Group>
