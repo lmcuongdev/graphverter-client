@@ -12,6 +12,7 @@ import { getLatestVersion } from "app/slices/versionSlice";
 import { updateSession } from "app/slices/sessionSlice";
 import { mergeSchemas } from "utils/converter";
 import { toast } from "react-toastify";
+import { getDirectivesDefinitions } from "utils/directive";
 
 const ProjectDetail = () => {
   const { id } = useParams();
@@ -22,6 +23,10 @@ const ProjectDetail = () => {
   const session = useSelector((state) => state.sessions.session);
   const shouldReloadSession = useSelector(
     (state) => state.sessions.shouldReloadSession
+  );
+
+  const shouldReloadVersion = useSelector(
+    (state) => state.versions.shouldReloadVersion
   );
 
   useEffect(() => {
@@ -42,12 +47,19 @@ const ProjectDetail = () => {
     }
   }, [dispatch, project, session]);
 
+  useEffect(() => {
+    if (project && shouldReloadVersion) {
+      dispatch(getLatestVersion({ projectId: project.id }));
+    }
+  }, [dispatch, project, shouldReloadVersion]);
+
   const endpoints = useSelector((state) => state.sessions.endpoints);
   const schemaTexts = endpoints.map((endpoint) => endpoint.suggestedSchemaText);
   const saveSession = () => {
     // Merge schemas
     try {
-      const schemaText = mergeSchemas(...schemaTexts);
+      let schemaText = getDirectivesDefinitions();
+      schemaText += mergeSchemas(...schemaTexts);
 
       console.log(schemaText);
 

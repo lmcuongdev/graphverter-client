@@ -235,6 +235,6 @@ const ProjectDetail = () => {
       </Accordion>
     </>
   );
-};
+};;
 
 export default ProjectDetail;

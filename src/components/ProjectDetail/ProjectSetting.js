@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Form, Accordion, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
 import { projectActions } from "app/slices/projectSlice";
+import { deploy } from "app/slices/versionSlice";
 import deploySvg from "assets/deploy.svg";
 
 const ProjectSetting = () => {
@@ -11,6 +12,7 @@ const ProjectSetting = () => {
 
   const version = useSelector((state) => state.versions.version);
   const versionLoading = useSelector((state) => state.versions.loading);
+  const isDeploying = useSelector((state) => state.versions.isDeploying);
 
   return (
     <>
@@ -66,15 +68,22 @@ const ProjectSetting = () => {
       <div className="d-flex">
         <Button
           variant="primary"
-          disabled={versionLoading || !version.is_dirty}
+          disabled={versionLoading || !version.is_dirty || isDeploying}
+          onClick={() => dispatch(deploy({ projectId: project.id }))}
         >
-          Deploy{" "}
-          <img
-            src={deploySvg}
-            className="d-inline-block align-top"
-            alt="logo"
-            style={{ cursor: "pointer" }}
-          />
+          {isDeploying ? (
+            "Deploying..."
+          ) : (
+            <>
+              {`Deploy `}
+              <img
+                src={deploySvg}
+                className="d-inline-block align-top"
+                alt="logo"
+                style={{ cursor: "pointer" }}
+              />
+            </>
+          )}
         </Button>
         <p className="form-text text-muted mx-2">
           {versionLoading
