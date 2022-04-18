@@ -10,7 +10,7 @@ import SessionConfig from "components/ProjectDetail/SessionConfig";
 import { getProjectById } from "app/slices/projectSlice";
 import { getLatestVersion } from "app/slices/versionSlice";
 import { updateSession } from "app/slices/sessionSlice";
-import { mergeSchemas } from "utils/converter";
+import { manipulateSchemaTypeName, mergeSchemas } from "utils/converter";
 import { toast } from "react-toastify";
 import { getDirectivesDefinitions } from "utils/directive";
 
@@ -58,8 +58,12 @@ const ProjectDetail = () => {
   const saveSession = () => {
     // Merge schemas
     try {
+      // TODO: Validate each endpoint schema first
+      const manipulatedSchemas = schemaTexts.map((schema, index) =>
+        manipulateSchemaTypeName(schema, "_" + index)
+      );
       let schemaText = getDirectivesDefinitions();
-      schemaText += mergeSchemas(...schemaTexts);
+      schemaText += mergeSchemas(...manipulatedSchemas);
 
       console.log(schemaText);
 

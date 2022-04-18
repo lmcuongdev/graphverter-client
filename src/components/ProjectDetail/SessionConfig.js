@@ -75,6 +75,8 @@ const ProjectDetail = () => {
       return;
     }
 
+    // TODO: Add comments to separate payload and response schemas block
+    // Use regex to find the first `type Name` and `input Name` and add comments there
     const mergedSchema = mergeSchemas(
       payloadSchema.value,
       responseSchema.value
@@ -235,6 +237,6 @@ const ProjectDetail = () => {
       </Accordion>
     </>
   );
-};;
+};
 
 export default ProjectDetail;
