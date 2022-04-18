@@ -57,8 +57,15 @@ export const mergeSchemas = (...schemas) => {
   return print(mergeTypeDefs(schemas));
 };
 
-export const getSuggestedSchema = (schemaText, isMutation, { url, method }) => {
+export const getSuggestedSchema = (
+  schemaText,
+  isMutation,
+  { url, method, responseJson }
+) => {
   const definitionType = isMutation ? "Mutation" : "Query";
+  const responseTypeName = Array.isArray(JSON.parse(responseJson))
+    ? "[ResponseData]"
+    : "ResponseData";
 
   // If there's no Payload_Input suggested previously, returns empty string
   const suggestedInput =
@@ -67,7 +74,7 @@ export const getSuggestedSchema = (schemaText, isMutation, { url, method }) => {
       : "";
 
   let schema = `type ${definitionType} {
-  queryName${suggestedInput}: ResponseData
+  queryName${suggestedInput}: ${responseTypeName}
   @rest(
     url: "${url}"
     method: "${method}"
