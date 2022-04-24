@@ -1,10 +1,12 @@
+import { Kind, parse, print } from "graphql";
+import { mergeTypeDefs } from "@graphql-tools/merge";
+import { uid } from "uid/secure";
+import _ from "lodash/core";
+
 import {
   jsonToSchema as convertJsonToSchema,
   validateJson,
 } from "@lmcuongdev/json-to-schema/lib";
-import { Kind, parse, print } from "graphql";
-import { mergeTypeDefs } from "@graphql-tools/merge";
-import _ from "lodash/core";
 
 import { PREDEFINED_SCHEMA_TYPES } from "constants.js";
 
@@ -118,14 +120,12 @@ const getTypes = (schemaText) =>
 
 /**
  * @param  {string} schemaText - GraphQL schema text
- * @param  {string} postfix - Postfix to be added to the schema types
  *
- * @return {string} - new GraphQL schema text whose type names be updated with provided postfix
+ * @return {string} - new GraphQL schema text whose type names be updated with unique postfix
  */
-export const manipulateSchemaTypeName = (schemaText, postfix) => {
-  if (typeof postfix !== "string") {
-    postfix = String(postfix);
-  }
+export const manipulateSchemaTypeName = (schemaText) => {
+  // Generate unique postfix
+  const postfix = `_${uid(10)}`;
 
   // Get all the types and inputs in the schema
   const types = getTypes(schemaText);

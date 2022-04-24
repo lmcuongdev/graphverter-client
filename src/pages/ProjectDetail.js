@@ -59,8 +59,8 @@ const ProjectDetail = () => {
     // Merge schemas
     try {
       // TODO: Validate each endpoint schema first
-      const manipulatedSchemas = schemaTexts.map((schema, index) =>
-        manipulateSchemaTypeName(schema, "_" + index)
+      const manipulatedSchemas = schemaTexts.map((schema) =>
+        manipulateSchemaTypeName(schema)
       );
       let schemaText = getDirectivesDefinitions();
       schemaText += mergeSchemas(...manipulatedSchemas);
