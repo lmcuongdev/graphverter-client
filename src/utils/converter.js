@@ -94,7 +94,7 @@ const getRegexStringInputs = (type_) => [
   `type\\s+${type_}\\W`,
   `:\\s+${type_}\\W`,
   `input\\s+${type_}\\W`,
-  `:\\s+\\[${type_}\s*\\]`,
+  `:\\s+(\\[\\s*)+${type_}\\s*\\]`,
 ];
 
 /**
