@@ -42,6 +42,7 @@ const sessionSlice = createSlice({
     endpoints: [
       {
         // TODO: Add more
+        queryName: "",
         url: "https://app.sportdataapi.com/api/v1/soccer/topscorers",
         method: "GET",
         payloadJson: "",
@@ -64,6 +65,7 @@ const sessionSlice = createSlice({
     },
     addEndpoint: (state, action) => {
       state.endpoints.push({
+        queryName: "",
         url: "",
         method: "GET",
         payloadJson: "",

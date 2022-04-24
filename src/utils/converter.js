@@ -75,7 +75,7 @@ export const mergeSchemas = (...schemas) => {
 export const getSuggestedSchema = (
   schemaText,
   isMutation,
-  { url, method, responseJson }
+  { url, method, responseJson, queryName }
 ) => {
   const definitionType = isMutation ? "Mutation" : "Query";
   const responseTypeName = Array.isArray(JSON.parse(responseJson))
@@ -89,7 +89,7 @@ export const getSuggestedSchema = (
       : "";
 
   let schema = `type ${definitionType} {
-  queryName${suggestedInput}: ${responseTypeName}
+  ${queryName}${suggestedInput}: ${responseTypeName}
   @rest(
     url: "${url}"
     method: "${method}"

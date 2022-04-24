@@ -11,6 +11,7 @@ import {
 } from "utils/converter";
 import { sessionActions } from "app/slices/sessionSlice";
 import { confirm } from "components/ConfirmationModal";
+import { VALID_FIELD_REGEX } from "constants.js";
 
 const hasPayload = (method) => ["POST", "PUT"].includes(method);
 
@@ -34,6 +35,12 @@ const getEndpointValidations = (endpoints) => {
         errors.responseJson = e.message;
       }
     }
+    if (
+      !_.isString(endpoint.queryName) ||
+      !endpoint.queryName.match(VALID_FIELD_REGEX)
+    ) {
+      errors.queryName = `Query name must match ${VALID_FIELD_REGEX}`;
+    }
     return errors;
   });
 };
@@ -54,7 +61,7 @@ const ProjectDetail = () => {
     dispatch(handleEndpointDataChange({ index, type, value }));
   };
 
-  const handleFormSubmission = (event, index) => {
+  const onConvertButtonClicked = (event, index) => {
     event.preventDefault();
     // Validate first
     if (!_.isEmpty(errors[index])) {
@@ -94,16 +101,44 @@ const ProjectDetail = () => {
     <>
       <Accordion defaultActiveKey={0}>
         {endpoints.map((endpoint, index) => (
-          <Accordion.Item eventKey={index} key={index} className="my-2">
+          <Accordion.Item
+            eventKey={index}
+            key={index}
+            className={
+              "my-2 border rounded shadow-sm" +
+              (!_.isEmpty(errors[index]) ? " border-2 border-danger" : "")
+            }
+          >
             <Accordion.Header>
-              {endpoint.method} {endpoint.url}
+              <p className="p-0 m-0 fw-bold">{endpoint.queryName}</p>
             </Accordion.Header>
             <Accordion.Body>
               <div className="row">
                 <div className="col-6" id="left-pane">
                   <Form
-                    onSubmit={(event) => handleFormSubmission(event, index)}
+                    onSubmit={(event) => onConvertButtonClicked(event, index)}
                   >
+                    <Row className="mb-3">
+                      <Form.Group as={Col} md={12}>
+                        <Form.Label>Query name</Form.Label>
+                        <Form.Control
+                          placeholder="Your query name"
+                          value={endpoint.queryName}
+                          onChange={(e) =>
+                            handleEndpointDataChangeDispatch(
+                              index,
+                              "queryName",
+                              e.target.value
+                            )
+                          }
+                        />
+                        {errors[index]?.queryName && (
+                          <div className="text-danger">
+                            {errors[index]?.queryName}
+                          </div>
+                        )}
+                      </Form.Group>
+                    </Row>
                     <Row className="mb-3">
                       <Form.Group as={Col} md={3}>
                         <Form.Label>Method</Form.Label>
