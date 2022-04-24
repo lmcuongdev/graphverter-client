@@ -12,16 +12,27 @@ import { PREDEFINED_SCHEMA_TYPES } from "constants.js";
 
 const DEFAULT_RESPONSE_SCHEMA = `type ResponseData {_: String}`;
 /**
+ * Convert json to GraphQL schema, use nameSet to manage name collisions
+ *
  * @param  {string} jsonInput - JSON string
  * @param  {string} type - "request" or "response"
+ * @param  {Set|string[]} nameSet - unique set of type names
+ *
+ * @return {string} GraphQL schema
  */
-export const jsonToSchema = (jsonInput, type) => {
-  // If json is empty => return empty string
+export const jsonToSchema = (jsonInput, type, nameSet) => {
   const { error, value } = validateJson(jsonInput);
   if (error) {
     return { error };
   }
 
+  if (!nameSet) {
+    nameSet = new Set(PREDEFINED_SCHEMA_TYPES);
+  } else {
+    nameSet = new Set(nameSet);
+  }
+
+  // If json is empty => return empty string
   if (_.isEmpty(value)) {
     const value = type === "request" ? "" : DEFAULT_RESPONSE_SCHEMA;
     return { value };
@@ -33,6 +44,7 @@ export const jsonToSchema = (jsonInput, type) => {
   if (type === "request") {
     result = convertJsonToSchema({
       jsonInput,
+      nameSet,
       baseType: "Payload_Input",
       definition: "input",
       postfix: "_Input",
@@ -41,6 +53,7 @@ export const jsonToSchema = (jsonInput, type) => {
   if (type === "response") {
     result = convertJsonToSchema({
       jsonInput,
+      nameSet,
       baseType: "ResponseData",
       definition: "type",
     });

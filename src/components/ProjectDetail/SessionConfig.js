@@ -67,7 +67,8 @@ const ProjectDetail = () => {
       : { value: "" };
     const responseSchema = jsonToSchema(
       endpoints[index].responseJson,
-      "response"
+      "response",
+      payloadSchema.nameSet
     );
 
     if (payloadSchema.error || responseSchema.error) {
