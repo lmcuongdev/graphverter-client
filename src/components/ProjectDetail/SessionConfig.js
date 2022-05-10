@@ -184,7 +184,7 @@ const ProjectDetail = () => {
                           language="json"
                           value={endpoint.payloadJson}
                           theme="vs-dark"
-                          height="200px"
+                          height="300px"
                           onChange={(value) => {
                             handleEndpointDataChangeDispatch(
                               index,
@@ -205,7 +205,7 @@ const ProjectDetail = () => {
                         language="json"
                         value={endpoint.responseJson}
                         theme="vs-dark"
-                        height="200px"
+                        height="300px"
                         onChange={(value) => {
                           handleEndpointDataChangeDispatch(
                             index,
@@ -236,7 +236,7 @@ const ProjectDetail = () => {
                       language="graphql"
                       value={endpoint.suggestedSchemaText}
                       theme="vs-dark"
-                      height="400px"
+                      height="600px"
                       onChange={(value) => {
                         handleEndpointDataChangeDispatch(
                           index,
