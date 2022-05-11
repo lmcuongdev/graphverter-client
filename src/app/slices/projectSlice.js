@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import apiClient from "../../api-client";
+import { getSession } from "./sessionSlice";
+import { getLatestVersion } from "./versionSlice";
 
 export const getProjects = createAsyncThunk(
   "projects/getProjects",
@@ -23,6 +25,18 @@ export const getProjectById = createAsyncThunk(
     } catch (err) {
       throw Error(err.error_message);
     }
+  }
+);
+
+// Get project, session, and version data consecutively
+export const getProjectPageData = createAsyncThunk(
+  "projects/getProjectPageData",
+  async (projectId, { dispatch }) => {
+    const data = await dispatch(getProjectById(projectId));
+    await dispatch(
+      getSession({ projectId, sessionId: data.payload.session.id })
+    );
+    await dispatch(getLatestVersion({ projectId }));
   }
 );
 

@@ -26,7 +26,7 @@ const ConfirmationModal = ({
         </Modal.Header>
         <Modal.Body>{confirmation}</Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => proceed(false)}>
+          <Button variant="dark" onClick={() => proceed(false)}>
             {cancelLabel}
           </Button>
           <Button variant="danger" onClick={() => proceed(true)}>

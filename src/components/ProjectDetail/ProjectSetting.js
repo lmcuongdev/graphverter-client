@@ -3,7 +3,7 @@ import { Form, Accordion, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
 import { projectActions } from "app/slices/projectSlice";
-import { deploy } from "app/slices/versionSlice";
+import { deployAndReloadVersion as deploy } from "app/slices/versionSlice";
 import deploySvg from "assets/deploy.svg";
 
 const ProjectSetting = () => {

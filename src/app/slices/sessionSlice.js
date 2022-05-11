@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import { toCamelCase, toSnakeCase } from "utils/common";
 import apiClient from "../../api-client";
+import { getLatestVersion } from "./versionSlice";
 
 export const getSession = createAsyncThunk(
   "sessions/getSession",
@@ -19,7 +20,7 @@ export const getSession = createAsyncThunk(
   }
 );
 
-export const updateSession = createAsyncThunk(
+const updateSession = createAsyncThunk(
   "sessions/saveSession",
   async ({ projectId, sessionId, data }) => {
     try {
@@ -31,6 +32,17 @@ export const updateSession = createAsyncThunk(
     } catch (err) {
       throw Error(err.error_message);
     }
+  }
+);
+
+export const updateAndReloadSession = createAsyncThunk(
+  "sessions/updateAndReloadSession",
+  async (args, { dispatch }) => {
+    await dispatch(updateSession(args));
+    await dispatch(
+      getSession({ projectId: args.projectId, sessionId: args.sessionId })
+    );
+    await dispatch(getLatestVersion({ projectId: args.projectId }));
   }
 );
 

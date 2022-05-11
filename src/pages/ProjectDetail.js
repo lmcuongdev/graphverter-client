@@ -3,13 +3,11 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "react-bootstrap";
 
-import { getSession } from "app/slices/sessionSlice";
 import ProjectSetting from "components/ProjectDetail/ProjectSetting";
 import Header from "components/Layout/Header";
 import SessionConfig from "components/ProjectDetail/SessionConfig";
-import { getProjectById } from "app/slices/projectSlice";
-import { getLatestVersion } from "app/slices/versionSlice";
-import { updateSession } from "app/slices/sessionSlice";
+import { getProjectPageData } from "app/slices/projectSlice";
+import { updateAndReloadSession } from "app/slices/sessionSlice";
 import { manipulateSchemaTypeName, mergeSchemas } from "utils/converter";
 import { toast } from "react-toastify";
 import { getDirectivesDefinitions } from "utils/directive";
@@ -21,37 +19,10 @@ const ProjectDetail = () => {
   const error = useSelector((state) => state.project.error);
 
   const session = useSelector((state) => state.sessions.session);
-  const shouldReloadSession = useSelector(
-    (state) => state.sessions.shouldReloadSession
-  );
-
-  const shouldReloadVersion = useSelector(
-    (state) => state.versions.shouldReloadVersion
-  );
 
   useEffect(() => {
-    dispatch(getProjectById(id));
+    dispatch(getProjectPageData(id));
   }, [dispatch, id]);
-
-  useEffect(() => {
-    if (project && project.session && shouldReloadSession) {
-      dispatch(
-        getSession({ projectId: project.id, sessionId: project.session.id })
-      );
-    }
-  }, [dispatch, project, shouldReloadSession]);
-
-  useEffect(() => {
-    if (project && session) {
-      dispatch(getLatestVersion({ projectId: project.id }));
-    }
-  }, [dispatch, project, session]);
-
-  useEffect(() => {
-    if (project && shouldReloadVersion) {
-      dispatch(getLatestVersion({ projectId: project.id }));
-    }
-  }, [dispatch, project, shouldReloadVersion]);
 
   const endpoints = useSelector((state) => state.sessions.endpoints);
   const schemaTexts = endpoints.map((endpoint) => endpoint.suggestedSchemaText);
@@ -69,7 +40,7 @@ const ProjectDetail = () => {
 
       // If no error, dispatch updateSession
       dispatch(
-        updateSession({
+        updateAndReloadSession({
           projectId: project.id,
           sessionId: session.id,
           data: { endpoints, schemaText },
@@ -89,7 +60,7 @@ const ProjectDetail = () => {
 
         <h4>Settings</h4>
         {project && (
-          <div className="container mb-2 py-3 bg-light rounded">
+          <div className="container mb-4 py-3 bg-light rounded shadow">
             <ProjectSetting />
           </div>
         )}
@@ -105,7 +76,7 @@ const ProjectDetail = () => {
           </Button>
         </div>
         {session && (
-          <div className="container mb-2 py-3 bg-light rounded">
+          <div className="container mb-2 py-3 bg-light rounded shadow">
             <SessionConfig />
           </div>
         )}

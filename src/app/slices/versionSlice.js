@@ -16,15 +16,20 @@ export const getLatestVersion = createAsyncThunk(
   }
 );
 
-export const deploy = createAsyncThunk(
-  "projects/deploy",
-  async ({ projectId }) => {
-    try {
-      const response = await apiClient.post(`/projects/${projectId}/versions`);
-      return response;
-    } catch (err) {
-      throw Error(err.error_message);
-    }
+const deploy = createAsyncThunk("projects/deploy", async ({ projectId }) => {
+  try {
+    const response = await apiClient.post(`/projects/${projectId}/versions`);
+    return response;
+  } catch (err) {
+    throw Error(err.error_message);
+  }
+});
+
+export const deployAndReloadVersion = createAsyncThunk(
+  "projects/deployAndReloadVersion",
+  async ({ projectId }, { dispatch }) => {
+    await dispatch(deploy({ projectId }));
+    await dispatch(getLatestVersion({ projectId }));
   }
 );
 
@@ -35,7 +40,6 @@ const versionSlice = createSlice({
     loading: true,
     error: null,
     isDeploying: false,
-    shouldReloadVersion: false,
   },
   reducers: {},
   extraReducers: {
@@ -45,7 +49,6 @@ const versionSlice = createSlice({
     [getLatestVersion.fulfilled]: (state, action) => {
       state.version = action.payload;
       state.loading = false;
-      state.shouldReloadVersion = false;
     },
     [getLatestVersion.rejected]: (state, action) => {
       const error = action.error.message || "Unexpected Error!";
@@ -58,7 +61,6 @@ const versionSlice = createSlice({
     },
     [deploy.fulfilled]: (state, action) => {
       toast.success("Deployed successfully!");
-      state.shouldReloadVersion = true;
       state.isDeploying = false;
     },
     [deploy.rejected]: (state, action) => {

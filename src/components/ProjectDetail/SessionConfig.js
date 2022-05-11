@@ -110,7 +110,13 @@ const ProjectDetail = () => {
             }
           >
             <Accordion.Header>
-              <p className="p-0 m-0 fw-bold">{endpoint.queryName}</p>
+              <p
+                className={`p-0 m-0 fw-bold ${
+                  !_.isEmpty(errors[index]) ? "text-danger" : ""
+                }`}
+              >
+                {endpoint.queryName}
+              </p>
             </Accordion.Header>
             <Accordion.Body>
               <div className="row">
@@ -120,7 +126,9 @@ const ProjectDetail = () => {
                   >
                     <Row className="mb-3">
                       <Form.Group as={Col} md={12}>
-                        <Form.Label>Query name</Form.Label>
+                        <Form.Label className="text-dark">
+                          Query name
+                        </Form.Label>
                         <Form.Control
                           placeholder="Your query name"
                           value={endpoint.queryName}
@@ -159,7 +167,7 @@ const ProjectDetail = () => {
                       </Form.Group>
 
                       <Form.Group as={Col} md={9}>
-                        <Form.Label>URL</Form.Label>
+                        <Form.Label className="text-dark">URL</Form.Label>
                         <Form.Control
                           placeholder="https://api.com/"
                           value={endpoint.url}
@@ -179,7 +187,9 @@ const ProjectDetail = () => {
 
                     {hasPayload(endpoint.method) && (
                       <Form.Group className="mb-3">
-                        <Form.Label>Request payload</Form.Label>
+                        <Form.Label className="text-dark">
+                          Request payload
+                        </Form.Label>
                         <Editor
                           language="json"
                           value={endpoint.payloadJson}
@@ -200,7 +210,9 @@ const ProjectDetail = () => {
                     )}
 
                     <Form.Group className="mb-3">
-                      <Form.Label>Response data</Form.Label>
+                      <Form.Label className="text-dark">
+                        Response data
+                      </Form.Label>
                       <Editor
                         language="json"
                         value={endpoint.responseJson}
@@ -231,7 +243,9 @@ const ProjectDetail = () => {
                 </div>
                 <div className="col-6" id="right-pane">
                   <Form.Group className="mb-3">
-                    <Form.Label>Converted schemas</Form.Label>
+                    <Form.Label className="text-dark">
+                      Converted schemas
+                    </Form.Label>
                     <Editor
                       language="graphql"
                       value={endpoint.suggestedSchemaText}
