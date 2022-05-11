@@ -21,7 +21,7 @@ const Home = () => {
         <h1 className="text-center">Projects</h1>
         {loading && <div>Loading...</div>}
         {error && <div className="text-danger">{error}</div>}
-        {projects.length > 0 && <ProjectList projects={projects} />}
+        {<ProjectList projects={projects} />}
       </div>
     </>
   );

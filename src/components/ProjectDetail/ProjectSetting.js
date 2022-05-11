@@ -68,7 +68,7 @@ const ProjectSetting = () => {
       <div className="d-flex">
         <Button
           variant="primary"
-          disabled={versionLoading || !version.is_dirty || isDeploying}
+          disabled={versionLoading || !version?.is_dirty || isDeploying}
           onClick={() => dispatch(deploy({ projectId: project.id }))}
         >
           {isDeploying ? (
@@ -88,7 +88,7 @@ const ProjectSetting = () => {
         <p className="form-text text-muted mx-2">
           {versionLoading
             ? "Loading..."
-            : version.is_dirty
+            : version?.is_dirty
             ? "You have changes ready to be launched"
             : "No changes to be launched"}
         </p>

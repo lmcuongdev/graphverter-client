@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
+import { toSnakeCase } from "utils/common";
 import apiClient from "../../api-client";
 import { getSession } from "./sessionSlice";
 import { getLatestVersion } from "./versionSlice";
@@ -11,6 +12,19 @@ export const getProjects = createAsyncThunk(
       const response = await apiClient.get("/projects");
       return response.items;
     } catch (err) {
+      throw Error(err.error_message);
+    }
+  }
+);
+
+export const createProject = createAsyncThunk(
+  "projects/createProject",
+  async (data, { dispatch }) => {
+    try {
+      await apiClient.post("/projects", toSnakeCase(data));
+      await dispatch(getProjects());
+    } catch (err) {
+      toast.error(err.error_message);
       throw Error(err.error_message);
     }
   }
