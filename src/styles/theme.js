@@ -6,7 +6,7 @@ export const lightTheme = {
   primary: "rgb(200, 117, 196)",
   primary2: "rgb(200, 117, 147)",
   bg: "rgb(248, 248, 248)",
-  bg2: "#e6e6e6",
+  bg2: "#F1F1F1",
 };
 
 export const darkTheme = {

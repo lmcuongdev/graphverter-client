@@ -78,7 +78,7 @@ const ProjectSetting = () => {
               {`Deploy `}
               <img
                 src={deploySvg}
-                className="d-inline-block align-top"
+                className="d-inline-block"
                 alt="logo"
                 style={{ cursor: "pointer" }}
               />

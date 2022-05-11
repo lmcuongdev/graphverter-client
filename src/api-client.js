@@ -19,11 +19,12 @@ class API {
     }
 
     const { baseURL = process.env.REACT_APP_API_URL } = args[0];
+    const token = localStorage.getItem("token");
 
     this.apiClient = axios.create({
       baseURL: baseURL,
       headers: {
-        Authorization: `Bearer ${process.env.REACT_APP_TOKEN}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
         Accept: "application/json",
         "Access-Control-Allow-Origin": "*",
@@ -39,29 +40,44 @@ class API {
       validateStatus: (status) => status <= 500,
     });
   }
+
+  _getAuthHeader = (headers = {}) => {
+    const token = localStorage.getItem("token");
+    return {
+      ...headers,
+      Authorization: `Bearer ${token}`,
+    };
+  };
+
   get = async (url, params, headers = {}) => {
     if (params) {
       url += `${url.includes("?") ? "&" : "?"}${new URLSearchParams(params)}`;
     }
     const response = await this.apiClient.get(url, {
       params: params,
-      headers: headers,
+      headers: this._getAuthHeader(headers),
     });
     return handleResponse(response);
   };
 
-  post = async (url, data = {}) => {
-    const response = await this.apiClient.post(url, data);
+  post = async (url, data = {}, headers = {}) => {
+    const response = await this.apiClient.post(url, data, {
+      headers: this._getAuthHeader(headers),
+    });
     return handleResponse(response);
   };
 
-  put = async (url, data = {}) => {
-    const response = await this.apiClient.put(url, data);
+  put = async (url, data = {}, headers = {}) => {
+    const response = await this.apiClient.put(url, data, {
+      headers: this._getAuthHeader(headers),
+    });
     return handleResponse(response);
   };
 
-  del = async (url) => {
-    const response = await this.apiClient.delete(url);
+  del = async (url, headers = {}) => {
+    const response = await this.apiClient.delete(url, {
+      headers: this._getAuthHeader(headers),
+    });
     return handleResponse(response);
   };
 }

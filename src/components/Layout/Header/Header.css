@@ -2,3 +2,6 @@
     text-decoration: underline !important;
     font-weight: bold;
 }
+.dropdown-toggle::after {
+    content: none;
+}
