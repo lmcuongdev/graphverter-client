@@ -2,7 +2,7 @@ import React from "react";
 import { Form, Accordion, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
-import { projectActions } from "app/slices/projectSlice";
+import { projectActions, togglePublishProject } from "app/slices/projectSlice";
 import { deployAndReloadVersion as deploy } from "app/slices/versionSlice";
 import deploySvg from "assets/deploy.svg";
 
@@ -53,7 +53,12 @@ const ProjectSetting = () => {
                     checked={project.is_deployed}
                     onChange={() => {
                       // TODO: Call API here
-                      dispatch(projectActions.setDeploy(!project.is_deployed));
+                      dispatch(
+                        togglePublishProject({
+                          projectId: project.id,
+                          published: !project.is_deployed,
+                        })
+                      );
                     }}
                   />
                   <label className="form-check-label">

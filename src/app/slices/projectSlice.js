@@ -42,6 +42,22 @@ export const getProjectById = createAsyncThunk(
   }
 );
 
+export const togglePublishProject = createAsyncThunk(
+  "projects/togglePublishProject",
+  async ({ projectId, published }, { dispatch }) => {
+    try {
+      dispatch(projectActions.setDeploy(published));
+      const response = await apiClient.put(`/projects/${projectId}`, {
+        is_deployed: published,
+      });
+      return response;
+    } catch (err) {
+      dispatch(projectActions.setDeploy(!published));
+      throw Error(err.error_message);
+    }
+  }
+);
+
 // Get project, session, and version data consecutively
 export const getProjectPageData = createAsyncThunk(
   "projects/getProjectPageData",
@@ -85,6 +101,11 @@ const projectSlice = createSlice({
       state.project = action.payload;
     },
     [getProjectById.rejected]: (state, action) => {
+      const error = action.error.message || "Unexpected Error!";
+      state.error = error;
+      toast.error(error);
+    },
+    [togglePublishProject.rejected]: (state, action) => {
       const error = action.error.message || "Unexpected Error!";
       state.error = error;
       toast.error(error);

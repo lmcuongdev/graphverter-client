@@ -112,7 +112,7 @@ const ProjectItem = ({ project }) => {
       <Card.Body className="pt-2">
         {/* <Card.Title>{project.name}</Card.Title> */}
         <Card.Text className="mb-1">
-          <strong>Deployed at:</strong>{" "}
+          <strong>Deployed API:</strong>{" "}
           <Link to={project.fullPath}>{project.fullPath}</Link>
         </Card.Text>
         <Card.Text style={{ fontSize: 10 }} className="text-muted">
